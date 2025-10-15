@@ -9,14 +9,23 @@ import SwiftUI
 import SwiftData
 
 struct SearchView: View {
+	@StateObject var viewModel = SearchViewModel()
 
     var body: some View {
-        NavigationSplitView {
+		NavigationStack {
             List {
                 
             }
-        } detail: {
-            Text("Select an item")
+			.searchable(text: $viewModel.query, suggestions: {
+				Text("Suggestion")
+					.onTapGesture {
+						viewModel.query = "Suggestion"
+					}
+			})
+			.onChange(of: viewModel.debouncedQuery) { _, newValue in
+				print(newValue)
+			}
+			.navigationTitle(Text("Search Movie"))
         }
     }
 }
