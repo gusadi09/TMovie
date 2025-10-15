@@ -11,9 +11,7 @@ import SwiftData
 @main
 struct TMovieApp: App {
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
+        let schema = Schema([])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
         do {
@@ -25,7 +23,7 @@ struct TMovieApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+			SearchView()
         }
         .modelContainer(sharedModelContainer)
     }
