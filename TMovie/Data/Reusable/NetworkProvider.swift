@@ -15,7 +15,32 @@ final class NetworkProvider<T: Endpoint> {
 		self.stubBehavior = stubBehavior
 	}
 	
-	func request(_ target: T) async throws -> Data {
+	func request<Model: Codable>(_ target: T, model: Model.Type) async throws -> Model {
+		let data: Data
+		
+		switch stubBehavior {
+		case .never:
+			data = try await performNetworkRequest(target)
+		case .immediate:
+			data = target.sampleData
+		case .delayed(let seconds):
+			try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+			data = target.sampleData
+		}
+		
+		let jsonDecoder = JSONDecoder()
+		let formatter = DateFormatter()
+		formatter.dateFormat = "YYYY-MM-DD"
+		jsonDecoder.dateDecodingStrategy = .formatted(formatter)
+		
+		do {
+			return try jsonDecoder.decode(Model.self, from: data)
+		} catch {
+			throw NetworkError.decodingError(error)
+		}
+	}
+	
+	func requestRaw(_ target: T) async throws -> Data {
 		switch stubBehavior {
 		case .never:
 			return try await performNetworkRequest(target)
