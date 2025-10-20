@@ -9,5 +9,5 @@ import Foundation
 
 enum DateFormat: String {
 	case yyyyMMdd = "yyyy-MM-dd"
-	case ddMMyyyy = "dd MM yyyy"
+	case ddMMyyyy = "dd MMMM yyyy"
 }
