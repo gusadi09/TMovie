@@ -23,11 +23,27 @@ final class TMovieUITests: XCTestCase {
     }
 
     @MainActor
-    func testExample() throws {
+    func testOnFirstOpenItemEmpty() throws {
         // UI tests must launch the application that they test.
         let app = XCUIApplication()
         app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+		
+		XCTAssertEqual(app.collectionViews.cells.buttons.count, 0)
     }
+	
+	@MainActor
+	func testOnItemSearchNotEmpty() throws {
+		let app = XCUIApplication()
+		app.launch()
+		
+		app.searchFields.firstMatch.tap()
+		app.searchFields.firstMatch.typeText("Avengers")
+		
+		app.typeText("\n")
+		
+		sleep(5)
+		
+		let firstCell = app.collectionViews.cells.buttons.firstMatch
+		XCTAssertTrue(firstCell.waitForExistence(timeout: 10), "Expected at least one search result cell")
+	}
 }

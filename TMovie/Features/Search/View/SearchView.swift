@@ -11,54 +11,137 @@ import SwiftData
 struct SearchView: View {
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
 	@StateObject var viewModel = SearchViewModel()
+	
+	@Namespace var transition
 
     var body: some View {
 		NavigationStack {
 			GeometryReader { proxy in
 				List {
-					NavigationLink {
-						EmptyView()
-					} label: {
-						movieCard(proxy: proxy)
+					if viewModel.isLoading {
+						loadingView()
+						.listRowSeparator(.hidden)
+						.listRowInsets(.init(top: proxy.size.height/3, leading: 16, bottom: 16, trailing: 16))
+					} else if viewModel.movieItems.isEmpty {
+						emptyMovieView(proxy: proxy)
+						.listRowSeparator(.hidden)
+						.listRowInsets(.init(top: proxy.size.height/3, leading: 16, bottom: 16, trailing: 16))
+					} else {
+						ForEach(viewModel.movieItems) { movie in
+							NavigationLink {
+								ImageLoader(path: movie.posterPath.orEmpty())
+									.navigationTransition(.zoom(sourceID: movie, in: transition))
+							} label: {
+								movieCard(with: movie, proxy: proxy)
+									.matchedTransitionSource(id: movie, in: transition)
+							}
+							.listRowSeparator(.hidden)
+							.onAppear {
+								if viewModel.isAddPage(on: movie) {
+									viewModel.search.page += 1
+								}
+							}
+						}
+						
+						if viewModel.isPageLoading {
+							HStack {
+								Spacer()
+								
+								ProgressView()
+									.progressViewStyle(.circular)
+								
+								Spacer()
+							}
+						}
 					}
-					.listRowSeparator(.hidden)
 				}
 				.listStyle(.plain)
-				.searchable(text: $viewModel.query, suggestions: {
-					Text("Suggestion")
-						.onTapGesture {
-							viewModel.query = "Suggestion"
-						}
-				})
+				.searchable(text: $viewModel.query)
 			}
-			.onChange(of: viewModel.debouncedQuery) { _, newValue in
-				print(newValue)
+			.onChange(of: viewModel.search.query) { _, _ in
+				Task {
+					await viewModel.search(onRefresh: true)
+				}
+			}
+			.onChange(of: viewModel.search.page) { _, _ in
+				Task {
+					await viewModel.search(isPaging: true)
+				}
 			}
 			.navigationTitle(Text("Search Movie"))
+			.task {
+				guard !viewModel.isMoviesExisting() else { return }
+				await viewModel.search()
+			}
         }
     }
 }
 
 extension SearchView {
 	@ViewBuilder
-	func movieCard(proxy: GeometryProxy) -> some View {
+	func loadingView() -> some View {
+		HStack {
+			Spacer()
+			
+			VStack(spacing: 10) {
+				ProgressView()
+					.progressViewStyle(.circular)
+				
+				Text("Loading...")
+					.font(.system(size: 16, weight: .medium))
+					.multilineTextAlignment(.center)
+			}
+			
+			Spacer()
+		}
+	}
+	
+	@ViewBuilder
+	func emptyMovieView(proxy: GeometryProxy) -> some View {
+		let isLandscape = proxy.size.width > proxy.size.height
+		let imageWidth = isLandscape ? proxy.size.width/8 : proxy.size.width/5
+		
+		HStack {
+			Spacer()
+			
+			VStack(spacing: 10) {
+				Image(systemName: "exclamationmark.circle")
+					.resizable()
+					.scaledToFit()
+					.frame(width: imageWidth)
+				
+				Text("Your search seems empty or there is no movie found")
+					.font(.system(size: 16, weight: .medium))
+					.multilineTextAlignment(.center)
+			}
+			
+			Spacer()
+		}
+	}
+	
+	@ViewBuilder
+	func movieCard(
+		with movie: RemoteMovie.Response.MovieListed,
+		proxy: GeometryProxy
+	) -> some View {
 		let isLandscape = proxy.size.width > proxy.size.height
 		let imageWidth = isLandscape ? proxy.size.width/8 : proxy.size.width/5
 		let imageHeight = isLandscape ? proxy.size.height/2.5 : proxy.size.height/6
 		
 		HStack {
 			ImageLoader(
-				path: "/rQfX2xx8TUoNvyk892yKWNikJaM.jpg",
+				path: movie.posterPath.orEmpty(),
 				width: imageWidth,
 				height: imageHeight
 			)
 			.clipShape(RoundedRectangle(cornerRadius: 10))
 			
 			VStack(alignment: .leading, spacing: 8) {
-				Text("The Conjuring")
+				Text(movie.title.orEmpty())
 					.font(.system(size: 16, weight: .bold))
+					.lineLimit(2)
 				
-				Text("Release on \(Date().toString(with: .ddMMyyyy))")
+				Text("Release on \((movie.releaseDate.orEmpty().toDate(with: .yyyyMMdd)).toString(with: .ddMMyyyy))")
 					.font(.system(size: 12, weight: .medium))
 					.foregroundStyle(.white)
 					.padding(8)
@@ -67,6 +150,7 @@ extension SearchView {
 					)
 					.clipShape(RoundedRectangle(cornerRadius: 8))
 			}
+			.multilineTextAlignment(.leading)
 			
 			Spacer()
 		}

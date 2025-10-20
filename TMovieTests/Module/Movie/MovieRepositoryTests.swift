@@ -24,7 +24,7 @@ struct MovieRepositoryTests {
 	}
 	
 	@Test func requestSearch_integrationTest() async throws {
-		guard KeychainManager.shared.save(token: "[TMDB_ACCESS_TOKEN_AUTH]") else { return }
+		guard KeychainManager.shared.save(token: "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhYjQxMzdiMjFlY2E2MThhNzFiMTg3NDFhZGEwMDQyMSIsIm5iZiI6MTc2MDUyNjU4OS41NzksInN1YiI6IjY4ZWY4MGZkMzk1ZjQ3NjRiODJiZTk5NSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.1GWjIdQQRsI1M72W17IdGSmPwYoBXVmbpTLi9J4h9bc") else { return }
 		
 		do {
 			let data = try await sut.search(from: RemoteMovie.Request.Search(query: "Conjuring", page: 1))
