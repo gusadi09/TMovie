@@ -57,7 +57,7 @@ final class SearchViewModel: ObservableObject {
 		self.isError = false
 		self.errrorMessage = nil
 		
-		guard KeychainManager.shared.save(token: "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhYjQxMzdiMjFlY2E2MThhNzFiMTg3NDFhZGEwMDQyMSIsIm5iZiI6MTc2MDUyNjU4OS41NzksInN1YiI6IjY4ZWY4MGZkMzk1ZjQ3NjRiODJiZTk5NSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.1GWjIdQQRsI1M72W17IdGSmPwYoBXVmbpTLi9J4h9bc") else { return }
+		guard KeychainManager.shared.save(token: "[TMDB_ACCESS_TOKEN_AUTH]") else { return }
 		
 		do {
 			let movies = try await repository.search(from: self.search)
