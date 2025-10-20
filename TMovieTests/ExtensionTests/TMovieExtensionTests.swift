@@ -53,4 +53,16 @@ struct TMovieExtensionTests {
 		
 		#expect(data["key"] as? String == "value")
 	}
+	
+	@Test func stringToDate() async throws {
+		let stringDate = "2025-12-25"
+		
+		#expect(stringDate.toDate(with: .yyyyMMdd) != Date())
+	}
+	
+	@Test func dateToString() async throws {
+		let date = Date()
+		
+		#expect(date.toString(with: .ddMMyyyy) == Date().toString(with: .ddMMyyyy))
+	}
 }

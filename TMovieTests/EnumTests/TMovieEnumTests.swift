@@ -11,13 +11,18 @@ import Testing
 struct TMovieEnumTests {
 	@Test func networkError_messageNotEmpty() async throws {
 		let error: [NetworkError] = [
+			.unauthorized,
+			.noData,
 			.invalidURL,
-			.decodingError(DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Test"))),
-			.invalidResponse
+			.invalidResponse,
+			.custom("TEST ERROR"),
+			.decodingError(DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "TEST"))),
+			.requestFailed(underlying: DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "TEST"))),
+			.statusCode(404, data: nil)
 		]
 		
 		for e in error {
-			#expect(!(e.message.isEmpty))
+			#expect(!(e.errorDescription.isEmpty))
 		}
 	}
 	

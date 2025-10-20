@@ -15,7 +15,7 @@ enum RemoteMovie {
 extension RemoteMovie.Response {
 	struct List: Codable {
 		let page: UInt?
-		let results: [Detail]
+		let results: [MovieListed]
 		let totalPages: UInt?
 		let totalResults: UInt?
 		
@@ -24,6 +24,28 @@ extension RemoteMovie.Response {
 			case results
 			case totalPages = "total_pages"
 			case totalResults = "total_results"
+		}
+	}
+	
+	struct MovieListed: Codable, Identifiable, Hashable {
+		let adult: Bool?
+		let posterPath: String?
+		let id: UInt?
+		let originalTitle: String?
+		let releaseDate: String?
+		let title: String?
+		let voteAverage: Float?
+		let voteCount: UInt?
+		
+		enum CodingKeys: String, CodingKey {
+			case adult
+			case posterPath = "poster_path"
+			case id
+			case originalTitle = "original_title"
+			case releaseDate = "release_date"
+			case title
+			case voteAverage = "vote_average"
+			case voteCount = "vote_count"
 		}
 	}
 	
@@ -42,7 +64,7 @@ extension RemoteMovie.Response {
 		let posterPath: String?
 		let productionCompanies: [ProductionCompany]
 		let productionCountries: [ProductionCountry]
-		let releaseDate: Date?
+		let releaseDate: String?
 		let revenue: UInt?
 		let runtime: UInt?
 		let spokenLanguages: [SpokenLanguage]

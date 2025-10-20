@@ -21,22 +21,35 @@ final class NetworkProvider<T: Endpoint> {
 		switch stubBehavior {
 		case .never:
 			data = try await performNetworkRequest(target)
+			
+			let jsonDecoder = JSONDecoder()
+			
+			do {
+				return try jsonDecoder.decode(Model.self, from: data)
+			} catch {
+				throw NetworkError.decodingError(error)
+			}
 		case .immediate:
 			data = target.sampleData
+			
+			let jsonDecoder = JSONDecoder()
+			
+			do {
+				return try jsonDecoder.decode(Model.self, from: data)
+			} catch {
+				throw NetworkError.decodingError(error)
+			}
 		case .delayed(let seconds):
-			try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+			try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000)) // Convert from nanoseconds to be second
 			data = target.sampleData
-		}
-		
-		let jsonDecoder = JSONDecoder()
-		let formatter = DateFormatter()
-		formatter.dateFormat = "YYYY-MM-DD"
-		jsonDecoder.dateDecodingStrategy = .formatted(formatter)
-		
-		do {
-			return try jsonDecoder.decode(Model.self, from: data)
-		} catch {
-			throw NetworkError.decodingError(error)
+			
+			let jsonDecoder = JSONDecoder()
+			
+			do {
+				return try jsonDecoder.decode(Model.self, from: data)
+			} catch {
+				throw NetworkError.decodingError(error)
+			}
 		}
 	}
 	
@@ -67,12 +80,23 @@ final class NetworkProvider<T: Endpoint> {
 		case .requestParameters(let parameters, let encoding):
 			request = try encoding.encode(request, with: parameters)
 		}
-		
-		let (data, response) = try await URLSession.shared.data(for: request)
-		guard let httpResponse = response as? HTTPURLResponse, (200..<300).contains(httpResponse.statusCode) else {
-			throw NetworkError.invalidResponse
+		do {
+			let (data, response) = try await URLSession.shared.data(for: request)
+			
+			guard let httpResponse = response as? HTTPURLResponse else {
+				throw NetworkError.invalidResponse
+			}
+			
+			switch httpResponse.statusCode {
+			case 200..<300:
+				return data
+			case 401:
+				throw NetworkError.unauthorized
+			default:
+				throw NetworkError.statusCode(httpResponse.statusCode, data: data)
+			}
+		} catch {
+			throw NetworkError.requestFailed(underlying: error)
 		}
-		
-		return data
 	}
 }
