@@ -13,6 +13,20 @@ enum RemoteMovie {
 }
 
 extension RemoteMovie.Response {
+	struct List: Codable {
+		let page: UInt?
+		let results: [Detail]
+		let totalPages: UInt?
+		let totalResults: UInt?
+		
+		enum CodingKeys: String, CodingKey {
+			case page
+			case results
+			case totalPages = "total_pages"
+			case totalResults = "total_results"
+		}
+	}
+	
 	struct Detail: Codable, Identifiable, Hashable {
 		let id: UInt?
 		let adult: Bool?
@@ -110,12 +124,12 @@ extension RemoteMovie.Response {
 }
 
 extension RemoteMovie.Request {
-	struct Search: Equatable {
+	struct Search: Codable, Equatable {
 		var query: String
 		var page: UInt
 	}
 	
-	struct Detail: Equatable {
+	struct Detail: Codable, Equatable {
 		var movieId: UInt
 		
 		enum CodingKeys: String, CodingKey {

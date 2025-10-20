@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+protocol MovieRemoteDataSource {
+	func searchMovies(body: RemoteMovie.Request.Search) async throws -> RemoteMovie.Response.List
+}
