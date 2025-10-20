@@ -19,7 +19,7 @@ extension MovieEndpoint: TMovieEndpoint {
 		}
 	}
 	
-	var task: Task {
+	var task: NetworkTask {
 		switch self {
 		case .search:
 			return .requestParameters(parameters: parameters, encoding: parameterEncoding)
@@ -44,6 +44,13 @@ extension MovieEndpoint: TMovieEndpoint {
 		switch self {
 		case .search:
 			return .get
+		}
+	}
+	
+	var sampleData: Data {
+		switch self {
+		case .search:
+			return Data()
 		}
 	}
 }

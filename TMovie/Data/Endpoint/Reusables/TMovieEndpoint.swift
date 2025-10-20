@@ -22,7 +22,7 @@ extension TMovieEndpoint {
 		JSONEncoding.default
 	}
 	
-	var task: Task {
+	var task: NetworkTask {
 		return .requestParameters(parameters: parameters, encoding: parameterEncoding)
 	}
 	

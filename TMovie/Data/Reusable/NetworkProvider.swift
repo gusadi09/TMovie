@@ -9,7 +9,25 @@ import Foundation
 import SwiftData
 
 final class NetworkProvider<T: Endpoint> {
+	private let stubBehavior: StubBehavior
+	
+	init(stubBehavior: StubBehavior = .never) {
+		self.stubBehavior = stubBehavior
+	}
+	
 	func request(_ target: T) async throws -> Data {
+		switch stubBehavior {
+		case .never:
+			return try await performNetworkRequest(target)
+		case .immediate:
+			return target.sampleData
+		case .delayed(let seconds):
+			try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+			return target.sampleData
+		}
+	}
+	
+	func performNetworkRequest(_ target: T) async throws -> Data {
 		var request = URLRequest(url: target.baseURL.appendingPathComponent(target.path))
 		request.httpMethod = target.method.rawValue
 		target.headers?.forEach { request.setValue($1, forHTTPHeaderField: $0) }
