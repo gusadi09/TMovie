@@ -35,4 +35,20 @@ struct MovieRepositoryTests {
 			Issue.record(error, "❌ Unknown error: \(error.localizedDescription)")
 		}
 	}
+	
+	@Test func saveLastSearchMovie_toLocal() async throws {
+		do {
+			let data = try await sutMock.search(from: RemoteMovie.Request.Search(query: "Fight", page: 1))
+			
+			for item in data.results {
+				try await self.sutMock.saveRecentsSearchMovie(item)
+			}
+			
+			let localData = try await self.sutMock.getRecentsSearchMovie()
+			
+			#expect(!localData.isEmpty)
+		} catch {
+			Issue.record(error, "Unexpected result")
+		}
+	}
 }

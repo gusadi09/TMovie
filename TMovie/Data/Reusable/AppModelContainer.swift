@@ -13,10 +13,6 @@ final class AppModelContainer {
     var modelContainer: ModelContainer = {
         let schema = Schema([
 			Movie.self,
-			Genre.self,
-			ProductionCompany.self,
-			ProductionCountry.self,
-			SpokenLanguage.self,
 			SearchQuery.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
@@ -31,10 +27,6 @@ final class AppModelContainer {
     var mockModelContainer: ModelContainer = {
         let schema = Schema([
 			Movie.self,
-			Genre.self,
-			ProductionCompany.self,
-			ProductionCountry.self,
-			SpokenLanguage.self,
 			SearchQuery.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)

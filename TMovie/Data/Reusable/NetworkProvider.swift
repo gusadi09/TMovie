@@ -80,6 +80,7 @@ final class NetworkProvider<T: Endpoint> {
 		case .requestParameters(let parameters, let encoding):
 			request = try encoding.encode(request, with: parameters)
 		}
+		
 		do {
 			let (data, response) = try await URLSession.shared.data(for: request)
 			
@@ -96,7 +97,7 @@ final class NetworkProvider<T: Endpoint> {
 				throw NetworkError.statusCode(httpResponse.statusCode, data: data)
 			}
 		} catch {
-			throw NetworkError.requestFailed(underlying: error)
+			throw NetworkError.requestFailed
 		}
 	}
 }

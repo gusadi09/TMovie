@@ -17,12 +17,12 @@ struct TMovieEnumTests {
 			.invalidResponse,
 			.custom("TEST ERROR"),
 			.decodingError(DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "TEST"))),
-			.requestFailed(underlying: DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "TEST"))),
+			.requestFailed,
 			.statusCode(404, data: nil)
 		]
 		
 		for e in error {
-			#expect(!(e.errorDescription.isEmpty))
+			#expect(!(e.messsage.isEmpty))
 		}
 	}
 	

@@ -73,6 +73,16 @@ struct SearchView: View {
 				guard !viewModel.isMoviesExisting() else { return }
 				await viewModel.search()
 			}
+			.alert("Oops Something went wrong!", isPresented: $viewModel.isError) {
+				VStack {
+					Button("OK", role: .cancel, action: {})
+				}
+			} message: {
+				VStack {
+					Text(viewModel.errrorMessage.orEmpty())
+				}
+			}
+
         }
     }
 }

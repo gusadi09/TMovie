@@ -9,12 +9,29 @@ import Foundation
 
 final class MovieDefaultRepository: MovieRepository {
 	private let remote: MovieRemoteDataSource
+	private let local: MovieLocalDataSource
 	
-	init(remote: MovieRemoteDataSource = MovieDefaultRemoteDataSource()) {
+	init(
+		remote: MovieRemoteDataSource = MovieDefaultRemoteDataSource(),
+		local: MovieLocalDataSource = MovieDefaultLocalDataSource()
+	) {
 		self.remote = remote
+		self.local = local
 	}
 	
 	func search(from query: RemoteMovie.Request.Search) async throws -> RemoteMovie.Response.List {
 		try await self.remote.searchMovies(body: query)
+	}
+	
+	func removeAllSearchMovie() async throws {
+		try await self.local.removeAllSearchMovie()
+	}
+	
+	func getRecentsSearchMovie() async throws -> [Movie] {
+		try await self.local.getRecentsSearchMovie()
+	}
+	
+	func saveRecentsSearchMovie(_ movie: RemoteMovie.Response.MovieListed) async throws {
+		try await self.local.saveRecentsSearchMovie(movie)
 	}
 }

@@ -9,7 +9,7 @@ import Foundation
 
 enum NetworkError: Error, LocalizedError {
 	case invalidURL
-	case requestFailed(underlying: Error)
+	case requestFailed
 	case invalidResponse
 	case statusCode(Int, data: Data?)
 	case decodingError(Error)
@@ -17,12 +17,12 @@ enum NetworkError: Error, LocalizedError {
 	case unauthorized
 	case custom(String)
 	
-	var errorDescription: String {
+	var messsage: String {
 		switch self {
 		case .invalidURL:
 			return "Something went wrong with the URL, please try again later."
-		case .requestFailed(let underlying):
-			return "Request failed: \(underlying.localizedDescription)"
+		case .requestFailed:
+			return "Something went wrong with your request, please try again later."
 		case .invalidResponse:
 			return "Invalid response from server"
 		case .statusCode(let code, let data):

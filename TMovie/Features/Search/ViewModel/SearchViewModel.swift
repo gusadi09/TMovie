@@ -79,7 +79,8 @@ final class SearchViewModel: ObservableObject {
 			}
 			
 			self.isError = true
-			self.errrorMessage = error.errorDescription
+			print(error)
+			self.errrorMessage = error.messsage
 		} catch {
 			if !isPaging {
 				self.isLoading = false
@@ -88,6 +89,7 @@ final class SearchViewModel: ObservableObject {
 			}
 			
 			self.isError = true
+			print(error)
 			self.errrorMessage = error.localizedDescription
 		}
 	}
