@@ -9,6 +9,7 @@ import Foundation
 import Testing
 @testable import TMovie
 
+@Suite(.serialized)
 struct MovieRepositoryTests {
 	private let sutMock: MovieRepository = MovieMockRepository()
 	private let sut: MovieRepository = MovieDefaultRepository()
@@ -47,6 +48,24 @@ struct MovieRepositoryTests {
 			let localData = try await self.sutMock.getRecentsSearchMovie()
 			
 			#expect(!localData.isEmpty)
+		} catch {
+			Issue.record(error, "Unexpected result")
+		}
+	}
+	
+	@Test func deleteLastSearchMovie_toLocal() async throws {
+		do {
+			let data = try await sutMock.search(from: RemoteMovie.Request.Search(query: "Fight", page: 1))
+			
+			for item in data.results {
+				try await self.sutMock.saveRecentsSearchMovie(item)
+			}
+			
+			try await self.sutMock.removeAllSearchMovie()
+			
+			let localData = try await self.sutMock.getRecentsSearchMovie()
+			
+			#expect(localData.isEmpty)
 		} catch {
 			Issue.record(error, "Unexpected result")
 		}

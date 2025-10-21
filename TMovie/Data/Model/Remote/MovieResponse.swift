@@ -47,6 +47,37 @@ extension RemoteMovie.Response {
 			case voteAverage = "vote_average"
 			case voteCount = "vote_count"
 		}
+		
+		init(
+			adult: Bool?,
+			posterPath: String?,
+			id: UInt?,
+			originalTitle: String?,
+			releaseDate: String?,
+			title: String?,
+			voteAverage: Float?,
+			voteCount: UInt?
+		) {
+			self.adult = adult
+			self.posterPath = posterPath
+			self.id = id
+			self.originalTitle = originalTitle
+			self.releaseDate = releaseDate
+			self.title = title
+			self.voteAverage = voteAverage
+			self.voteCount = voteCount
+		}
+		
+		init(_ movie: Movie) {
+			self.adult = movie.adult
+			self.posterPath = movie.posterPath
+			self.id = movie.id
+			self.originalTitle = movie.originalTitle
+			self.releaseDate = movie.releaseDate
+			self.title = movie.title
+			self.voteAverage = movie.voteAverage
+			self.voteCount = movie.voteCount
+		}
 	}
 	
 	struct Detail: Codable, Identifiable, Hashable {

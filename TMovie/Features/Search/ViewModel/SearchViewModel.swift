@@ -17,6 +17,7 @@ final class SearchViewModel: ObservableObject {
 	@Published var isPageLoading = false
 	@Published var isError = false
 	@Published var errrorMessage: String?
+	@Published var lostConnection: Bool = false
 	
 	@Published var movies: RemoteMovie.Response.List?
 	@Published var movieItems: [RemoteMovie.Response.MovieListed] = []
@@ -27,7 +28,7 @@ final class SearchViewModel: ObservableObject {
 		self.repository = repository
 		
 		$query
-			.debounce(for: .milliseconds(600), scheduler: DispatchQueue.main)
+			.debounce(for: .milliseconds(360), scheduler: DispatchQueue.main)
 			.assign(to: \.search.query, on: self)
 			.store(in: &cancellables)
 	}
@@ -38,6 +39,23 @@ final class SearchViewModel: ObservableObject {
 	
 	func isMoviesExisting() -> Bool {
 		!movieItems.isEmpty
+	}
+	
+	@MainActor
+	func getLocalData() async {
+		do {
+			let movies = try await repository.getRecentsSearchMovie()
+			
+			self.movieItems = movies.compactMap({ movie in
+				RemoteMovie.Response.MovieListed(movie)
+			}).filter({ movie in
+				movie.title?.lowercased().contains(search.query.lowercased()) ?? false
+			})
+			
+			print(movieItems)
+		} catch {
+			print("Error: \(error)")
+		}
 	}
 	
 	@MainActor
@@ -62,12 +80,20 @@ final class SearchViewModel: ObservableObject {
 		do {
 			let movies = try await repository.search(from: self.search)
 			
+			if !search.query.isEmpty {
+				try await repository.removeAllSearchMovie()
+			}
+			
 			if !isPaging {
 				self.isLoading = false
 				self.movieItems = movies.results
 			} else {
 				self.isPageLoading = false
 				self.movieItems += movies.results
+			}
+			
+			for item in movieItems where !search.query.isEmpty {
+				try await repository.saveRecentsSearchMovie(item)
 			}
 			
 			self.movies = movies
@@ -79,7 +105,6 @@ final class SearchViewModel: ObservableObject {
 			}
 			
 			self.isError = true
-			print(error)
 			self.errrorMessage = error.messsage
 		} catch {
 			if !isPaging {
@@ -89,7 +114,6 @@ final class SearchViewModel: ObservableObject {
 			}
 			
 			self.isError = true
-			print(error)
 			self.errrorMessage = error.localizedDescription
 		}
 	}

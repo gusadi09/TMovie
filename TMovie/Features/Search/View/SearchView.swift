@@ -9,8 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct SearchView: View {
-	@Environment(\.horizontalSizeClass) var horizontalSizeClass
-	@StateObject var viewModel = SearchViewModel()
+	@StateObject private var viewModel = SearchViewModel()
+	@StateObject private var networkMonitor = NetworkMonitor.shared
 	
 	@Namespace var transition
 
@@ -60,19 +60,31 @@ struct SearchView: View {
 			}
 			.onChange(of: viewModel.search.query) { _, _ in
 				Task {
-					await viewModel.search(onRefresh: true)
+					if networkMonitor.isConnected {
+						await viewModel.search(onRefresh: true)
+					} else {
+						await viewModel.getLocalData()
+					}
 				}
 			}
 			.onChange(of: viewModel.search.page) { _, _ in
 				Task {
-					await viewModel.search(isPaging: true)
+					if networkMonitor.isConnected {
+						await viewModel.search(isPaging: true)
+					}
 				}
 			}
 			.navigationTitle(Text("Search Movie"))
 			.task {
-				guard !viewModel.isMoviesExisting() else { return }
+				guard !viewModel.isMoviesExisting() && networkMonitor.isConnected else {
+					await viewModel.getLocalData()
+					return
+				}
 				await viewModel.search()
 			}
+			.onChange(of: networkMonitor.isConnected, { _, newConnection in
+				viewModel.lostConnection = !newConnection
+			})
 			.alert("Oops Something went wrong!", isPresented: $viewModel.isError) {
 				VStack {
 					Button("OK", role: .cancel, action: {})
@@ -80,6 +92,15 @@ struct SearchView: View {
 			} message: {
 				VStack {
 					Text(viewModel.errrorMessage.orEmpty())
+				}
+			}
+			.alert("Internet Connection was Gone", isPresented: $viewModel.lostConnection) {
+				VStack {
+					Button("OK", role: .cancel, action: {})
+				}
+			} message: {
+				VStack {
+					Text("Don't worry your last search result will be saved and you can search again. You will be able to search other than last search once internet connection is back.")
 				}
 			}
 
