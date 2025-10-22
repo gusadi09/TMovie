@@ -17,7 +17,8 @@ final class AppModelContainer {
 			MovieDetail.self,
 			MovieProductionCompany.self,
 			MovieProductionCountry.self,
-			MovieSpokenLanguage.self
+			MovieSpokenLanguage.self,
+			FavoriteMovie.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         
@@ -34,7 +35,8 @@ final class AppModelContainer {
 			MovieDetail.self,
 			MovieProductionCompany.self,
 			MovieProductionCountry.self,
-			MovieSpokenLanguage.self
+			MovieSpokenLanguage.self,
+			FavoriteMovie.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
         

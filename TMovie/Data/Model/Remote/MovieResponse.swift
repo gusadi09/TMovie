@@ -86,7 +86,7 @@ extension RemoteMovie.Response {
 		let backdropPath: String?
 		let budget: UInt?
 		let genres: [Genre]
-		let homepage: URL?
+		let homepage: String?
 		let imdbId: String?
 		let originalLanguage: String?
 		let originalTitle: String?

@@ -50,4 +50,16 @@ final class MovieDefaultRepository: MovieRepository {
 	func removeMovieDetail(id: UInt) async throws {
 		try await self.local.removeMovieDetail(id: id)
 	}
+	
+	func getFavoriteMovie() async throws -> [FavoriteMovie] {
+		try await self.local.getFavoriteMovie()
+	}
+	
+	func saveFavoriteMovie(_ movie: RemoteMovie.Response.MovieListed) async throws {
+		try await self.local.saveFavoriteMovie(movie)
+	}
+	
+	func removeFavoriteMovie(id: UInt) async throws {
+		try await self.local.removeFavoriteMovie(id: id)
+	}
 }

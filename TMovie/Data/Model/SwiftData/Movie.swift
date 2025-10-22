@@ -58,7 +58,7 @@ final class MovieDetail {
 	var backdropPath: String?
 	var budget: UInt?
 	@Relationship(deleteRule: .cascade) var genres: [MovieGenre]
-	var homepage: URL?
+	var homepage: String?
 	var imdbId: String?
 	var originalLanguage: String?
 	var originalTitle: String?
@@ -119,7 +119,7 @@ final class MovieDetail {
 		backdropPath: String?,
 		budget: UInt?,
 		genres: [MovieGenre],
-		homepage: URL?,
+		homepage: String?,
 		imdbId: String?,
 		originalLanguage: String?,
 		originalTitle: String?,
@@ -213,5 +213,16 @@ final class MovieSpokenLanguage {
 		self.englishName = englishName
 		self.iso639_1 = iso639_1
 		self.name = name
+	}
+}
+
+@Model
+final class FavoriteMovie {
+	var favoriteId: UUID
+	@Relationship(deleteRule: .cascade) var movie: Movie
+	
+	init(favoriteId: UUID = UUID(), movie: Movie) {
+		self.favoriteId = favoriteId
+		self.movie = movie
 	}
 }

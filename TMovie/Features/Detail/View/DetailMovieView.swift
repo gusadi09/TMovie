@@ -125,6 +125,7 @@ struct DetailMovieView: View {
 												.lineLimit(2)
 												.multilineTextAlignment(.center)
 										}
+										.frame(width: 120)
 									}
 								}
 								.padding(.horizontal)
@@ -142,6 +143,29 @@ struct DetailMovieView: View {
 			.task {
 				await viewModel.detail(from: id)
 				await viewModel.getLocalData(with: id)
+			}
+		}
+		.toolbarBackgroundVisibility(.visible, for: .navigationBar)
+		.toolbar {
+			ToolbarItem(placement: .topBarTrailing) {
+				Button {
+					Task {
+						await viewModel.addToFavorite()
+					}
+				} label: {
+					Image(systemName: viewModel.startIcon(id: id))
+						.font(.system(size: 16, weight: .regular, design: .rounded))
+						.foregroundStyle(.yellow)
+				}
+			}
+		}
+		.alert("Oops Something went wrong!", isPresented: $viewModel.isError) {
+			VStack {
+				Button("OK", role: .cancel, action: {})
+			}
+		} message: {
+			VStack {
+				Text(viewModel.errorMessage.orEmpty())
 			}
 		}
 	}

@@ -70,4 +70,32 @@ final class MovieMockLocalDataSource: MovieLocalDataSource {
 		
 		try context.mockModelContainer.mainContext.save()
 	}
+	
+	@MainActor
+	func getFavoriteMovie() async throws -> [FavoriteMovie] {
+		let data = try context.mockModelContainer.mainContext.fetch(FetchDescriptor<FavoriteMovie>())
+		
+		return data
+	}
+	
+	@MainActor
+	func saveFavoriteMovie(_ movie: RemoteMovie.Response.MovieListed) async throws {
+		let movieLocal = Movie(movie)
+		let movieItem = FavoriteMovie(movie: movieLocal)
+		context.mockModelContainer.mainContext.insert(movieItem)
+		
+		try context.mockModelContainer.mainContext.save()
+	}
+	
+	@MainActor
+	func removeFavoriteMovie(id: UInt) async throws {
+		let fetchDescriptor = FetchDescriptor<FavoriteMovie>()
+		let users = try context.mockModelContainer.mainContext.fetch(fetchDescriptor)
+		
+		for user in users where user.movie.movieId == id {
+			context.mockModelContainer.mainContext.delete(user)
+		}
+		
+		try context.mockModelContainer.mainContext.save()
+	}
 }

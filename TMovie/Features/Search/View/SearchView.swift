@@ -52,6 +52,7 @@ struct SearchView: View {
 								
 								Spacer()
 							}
+							.listRowSeparator(.hidden)
 						}
 					}
 				}
@@ -76,8 +77,11 @@ struct SearchView: View {
 			}
 			.navigationTitle(Text("Search Movie"))
 			.task {
-				guard !viewModel.isMoviesExisting() && networkMonitor.isConnected else {
+				if !networkMonitor.isConnected {
 					await viewModel.getLocalData()
+				}
+				
+				guard !viewModel.isMoviesExisting() else {
 					return
 				}
 				await viewModel.search()
@@ -91,7 +95,7 @@ struct SearchView: View {
 				}
 			} message: {
 				VStack {
-					Text(viewModel.errrorMessage.orEmpty())
+					Text(viewModel.errorMessage.orEmpty())
 				}
 			}
 			.alert("Internet Connection was Gone", isPresented: $viewModel.lostConnection) {

@@ -11,7 +11,7 @@ import Testing
 
 @Suite(.serialized)
 struct MovieRepositoryTests {
-	private let sutMock: MovieRepository = MovieMockRepository()
+	private let sutMock: MovieRepository = MovieDefaultRepository(remote: MovieMockRemoteDataSource(), local: MovieMockLocalDataSource())
 	private let sut: MovieRepository = MovieDefaultRepository()
 	
 	@Test func requestSearch_mockSuccess() async throws {
@@ -111,6 +111,37 @@ struct MovieRepositoryTests {
 	@Test func deleteMovieDetail_toLocal() async throws {
 		do {
 			try await self.sutMock.removeMovieDetail(id: 550)
+			
+			let localData = try await self.sutMock.getMovieDetails()
+			
+			#expect(localData.isEmpty)
+		} catch {
+			Issue.record(error, "Unexpected result")
+		}
+	}
+	
+	@Test func saveFavorite_toLocal() async throws {
+		do {
+			let data = try await sutMock.search(from: RemoteMovie.Request.Search(query: "Fight", page: 1)).results.first
+			
+			guard let data else {
+				Issue.record("No data available")
+				return
+			}
+			
+			try await self.sutMock.saveFavoriteMovie(data)
+			
+			let localData = try await self.sutMock.getFavoriteMovie()
+			
+			#expect(!localData.isEmpty)
+		} catch {
+			Issue.record(error, "Unexpected result")
+		}
+	}
+	
+	@Test func deleteFavorite_onLocal() async throws {
+		do {
+			try await self.sutMock.removeFavoriteMovie(id: 550)
 			
 			let localData = try await self.sutMock.getMovieDetails()
 			
