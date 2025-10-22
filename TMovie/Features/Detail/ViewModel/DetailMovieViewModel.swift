@@ -39,6 +39,17 @@ final class DetailMovieViewModel: ObservableObject {
 	}
 	
 	@MainActor
+	func getFavorites() async {
+		do {
+			let favMovies = try await repository.getFavoriteMovie()
+			self.favoriteMovies = favMovies
+		} catch {
+			isError = true
+			errorMessage = error.localizedDescription
+		}
+	}
+	
+	@MainActor
 	func detail(from id: UInt) async {
 		self.isLoading = true
 		
@@ -58,9 +69,6 @@ final class DetailMovieViewModel: ObservableObject {
 			
 			self.isLoading = false
 			self.detail = movie
-			
-			let favMovies = try await repository.getFavoriteMovie()
-			self.favoriteMovies = favMovies
 		} catch let error as NetworkError {
 			self.isLoading = false
 			
@@ -100,11 +108,28 @@ final class DetailMovieViewModel: ObservableObject {
 	}
 	
 	func isMovieFavorite(id: UInt) -> Bool {
-		return favoriteMovies.contains(where: { $0.movie.movieId == id })
+		return favoriteMovies.contains(where: { $0.movieId == id })
 	}
 	
 	func startIcon(id: UInt) -> String {
 		isMovieFavorite(id: id) ? "star.fill" : "star"
+	}
+	
+	@MainActor
+	func removeFromFavorite(id: UInt) async {
+		do {
+			try await repository.removeFavoriteMovie(id: id)
+			
+			let favMovies = try await repository.getFavoriteMovie()
+			self.favoriteMovies = favMovies
+		} catch {
+			isError = true
+			errorMessage = error.localizedDescription
+		}
+	}
+	
+	func switchFavoriteButton(id: UInt) async {
+		isMovieFavorite(id: id) ? await removeFromFavorite(id: id) : await addToFavorite()
 	}
 	
 	@MainActor

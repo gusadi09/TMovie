@@ -219,10 +219,18 @@ final class MovieSpokenLanguage {
 @Model
 final class FavoriteMovie {
 	var favoriteId: UUID
-	@Relationship(deleteRule: .cascade) var movie: Movie
+	var posterPath: String?
+	var movieId: UInt?
+	var originalTitle: String?
+	var releaseDate: String?
+	var title: String?
 	
-	init(favoriteId: UUID = UUID(), movie: Movie) {
+	init(favoriteId: UUID = UUID(), posterPath: String? = nil, movieId: UInt? = nil, originalTitle: String? = nil, releaseDate: String? = nil, title: String? = nil) {
 		self.favoriteId = favoriteId
-		self.movie = movie
+		self.posterPath = posterPath
+		self.movieId = movieId
+		self.originalTitle = originalTitle
+		self.releaseDate = releaseDate
+		self.title = title
 	}
 }

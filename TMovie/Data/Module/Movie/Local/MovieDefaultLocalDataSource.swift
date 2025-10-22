@@ -78,7 +78,7 @@ final class MovieDefaultLocalDataSource: MovieLocalDataSource {
 	
 	@MainActor
 	func saveFavoriteMovie(_ movie: RemoteMovie.Response.MovieListed) async throws {
-		let movieItem = FavoriteMovie(movie: Movie(movie))
+		let movieItem = FavoriteMovie(posterPath: movie.posterPath, movieId: movie.id, originalTitle: movie.originalTitle, releaseDate: movie.releaseDate, title: movie.title)
 		context.modelContainer.mainContext.insert(movieItem)
 		
 		try context.modelContainer.mainContext.save()
@@ -89,7 +89,7 @@ final class MovieDefaultLocalDataSource: MovieLocalDataSource {
 		let fetchDescriptor = FetchDescriptor<FavoriteMovie>()
 		let users = try context.modelContainer.mainContext.fetch(fetchDescriptor)
 		
-		for user in users where user.movie.movieId == id {
+		for user in users where user.movieId == id {
 			context.modelContainer.mainContext.delete(user)
 		}
 		

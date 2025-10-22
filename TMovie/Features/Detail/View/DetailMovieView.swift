@@ -139,10 +139,12 @@ struct DetailMovieView: View {
 			.refreshable(action: {
 				await viewModel.detail(from: id)
 				await viewModel.getLocalData(with: id)
+				await viewModel.getFavorites()
 			})
 			.task {
 				await viewModel.detail(from: id)
 				await viewModel.getLocalData(with: id)
+				await viewModel.getFavorites()
 			}
 		}
 		.toolbarBackgroundVisibility(.visible, for: .navigationBar)
@@ -150,7 +152,7 @@ struct DetailMovieView: View {
 			ToolbarItem(placement: .topBarTrailing) {
 				Button {
 					Task {
-						await viewModel.addToFavorite()
+						await viewModel.switchFavoriteButton(id: id)
 					}
 				} label: {
 					Image(systemName: viewModel.startIcon(id: id))
