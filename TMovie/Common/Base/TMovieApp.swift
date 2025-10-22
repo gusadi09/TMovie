@@ -10,6 +10,11 @@ import SwiftData
 
 @main
 struct TMovieApp: App {
+	
+	init() {
+		guard KeychainManager.shared.save(token: "[TMDB_ACCESS_TOKEN_AUTH]") else { return }
+	}
+	
     var body: some Scene {
         WindowGroup {
 			TabContainerView()

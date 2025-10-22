@@ -88,8 +88,6 @@ final class SearchViewModel: ObservableObject {
 		self.isError = false
 		self.errorMessage = nil
 		
-		guard KeychainManager.shared.save(token: "[TMDB_ACCESS_TOKEN_AUTH]") else { return }
-		
 		do {
 			let movies = try await repository.search(from: self.search)
 			
