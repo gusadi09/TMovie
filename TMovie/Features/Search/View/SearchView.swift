@@ -29,7 +29,7 @@ struct SearchView: View {
 					} else {
 						ForEach(viewModel.movieItems) { movie in
 							NavigationLink {
-								DetailMovieView()
+								DetailMovieView(with: movie.id.orZero())
 									.navigationTransition(.zoom(sourceID: movie, in: transition))
 							} label: {
 								movieCard(with: movie, proxy: proxy)

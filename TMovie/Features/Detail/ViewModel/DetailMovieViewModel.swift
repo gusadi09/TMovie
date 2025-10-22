@@ -8,6 +8,8 @@
 import Foundation
 
 final class DetailMovieViewModel: ObservableObject {
+	@Published var scrollPosition: CGFloat = 0
+	
 	@Published var isLoading = false
 	@Published var isError = false
 	@Published var errrorMessage: String?
