@@ -23,21 +23,47 @@ final class TMovieUITests: XCTestCase {
     }
 
     @MainActor
-    func testExample() throws {
+    func testOnFirstOpenItemEmpty() throws {
         // UI tests must launch the application that they test.
         let app = XCUIApplication()
         app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+		
+		XCTAssertEqual(app.collectionViews.cells.buttons.count, 0)
     }
-
-    @MainActor
-    func testLaunchPerformance() throws {
-        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
-            // This measures how long it takes to launch your application.
-            measure(metrics: [XCTApplicationLaunchMetric()]) {
-                XCUIApplication().launch()
-            }
-        }
-    }
+	
+	@MainActor
+	func testOnItemSearchNotEmpty() throws {
+		let app = XCUIApplication()
+		app.launch()
+		
+		app.searchFields.firstMatch.tap()
+		app.searchFields.firstMatch.typeText("Avengers")
+		
+		app.typeText("\n")
+		
+		sleep(5)
+		
+		let firstCell = app.collectionViews.cells.buttons.firstMatch
+		XCTAssertTrue(firstCell.waitForExistence(timeout: 10), "Expected at least one search result cell")
+	}
+	
+	@MainActor
+	func testOnItemSearchNotEmpty_And_MovingToDetail() throws {
+		let app = XCUIApplication()
+		app.launch()
+		
+		app.searchFields.firstMatch.tap()
+		app.searchFields.firstMatch.typeText("Avengers")
+		
+		app.typeText("\n")
+		
+		sleep(5)
+		
+		app.collectionViews.cells.buttons.firstMatch.tap()
+		
+		sleep(5)
+		
+		let firstCell = app.scrollViews.staticTexts.firstMatch
+		XCTAssertTrue(firstCell.waitForExistence(timeout: 10), "Expected at least one search result cell")
+	}
 }
