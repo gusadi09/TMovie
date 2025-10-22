@@ -104,5 +104,11 @@ Add screenshots of your app’s interface here:
 <img width="511" height="966" alt="image" src="https://github.com/user-attachments/assets/899901e4-538a-4f74-ba04-928e2af7242f" />
 <img width="511" height="966" alt="image" src="https://github.com/user-attachments/assets/eed5f390-bb2e-4cfc-9789-f96ddba7cffb" />
 
+## 👨🏻‍💻Decision Making & Challenge During Development
+
+Before development, I made several decisions included develop the app using SwiftUI and use MVVM for architecture. I decide to used SwiftUI because able to develop UI faster than UIKit and fit for simple mini project. The other one, I used MVVM (Model-View-ViewModel) as architecture because MVVM is quite simple architecture and fit with SwiftUI pattern.
+
+During the development I facing problems like arrange the UI. because I'm not an person with design sense I just trying to face this problem by only using the system components and little bit custom components. I try to maximize the implementation and make the UI straight forward. But, for the technical code development I doesn't face any problem.
+
 
 
