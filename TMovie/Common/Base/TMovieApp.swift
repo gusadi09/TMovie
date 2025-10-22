@@ -12,7 +12,7 @@ import SwiftData
 struct TMovieApp: App {
     var body: some Scene {
         WindowGroup {
-			SearchView()
+			TabContainerView()
         }
     }
 }

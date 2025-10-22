@@ -17,4 +17,8 @@ final class MovieMockRemoteDataSource: MovieRemoteDataSource {
 	func searchMovies(body: RemoteMovie.Request.Search) async throws -> RemoteMovie.Response.List {
 		try await self.provider.request(.search(body), model: RemoteMovie.Response.List.self)
 	}
+	
+	func movieDetail(from id: UInt) async throws -> RemoteMovie.Response.Detail {
+		try await self.provider.request(.detail(id), model: RemoteMovie.Response.Detail.self)
+	}
 }

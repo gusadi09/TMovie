@@ -9,4 +9,5 @@ import Foundation
 
 protocol MovieRemoteDataSource {
 	func searchMovies(body: RemoteMovie.Request.Search) async throws -> RemoteMovie.Response.List
+	func movieDetail(from id: UInt) async throws -> RemoteMovie.Response.Detail
 }

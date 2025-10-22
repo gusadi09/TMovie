@@ -46,4 +46,24 @@ final class TMovieUITests: XCTestCase {
 		let firstCell = app.collectionViews.cells.buttons.firstMatch
 		XCTAssertTrue(firstCell.waitForExistence(timeout: 10), "Expected at least one search result cell")
 	}
+	
+	@MainActor
+	func testOnItemSearchNotEmpty_And_MovingToDetail() throws {
+		let app = XCUIApplication()
+		app.launch()
+		
+		app.searchFields.firstMatch.tap()
+		app.searchFields.firstMatch.typeText("Avengers")
+		
+		app.typeText("\n")
+		
+		sleep(5)
+		
+		app.collectionViews.cells.buttons.firstMatch.tap()
+		
+		sleep(5)
+		
+		let firstCell = app.scrollViews.staticTexts.firstMatch
+		XCTAssertTrue(firstCell.waitForExistence(timeout: 10), "Expected at least one search result cell")
+	}
 }

@@ -11,4 +11,10 @@ protocol MovieLocalDataSource {
 	func getRecentsSearchMovie() async throws -> [Movie]
 	func saveRecentsSearchMovie(_ movie: RemoteMovie.Response.MovieListed) async throws
 	func removeAllSearchMovie() async throws
+	func getMovieDetails() async throws -> [MovieDetail]
+	func saveMovieDetail(_ movie: RemoteMovie.Response.Detail) async throws
+	func removeMovieDetail(id: UInt) async throws
+	func getFavoriteMovie() async throws -> [FavoriteMovie]
+	func saveFavoriteMovie(_ movie: RemoteMovie.Response.MovieListed) async throws
+	func removeFavoriteMovie(id: UInt) async throws
 }

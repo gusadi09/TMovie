@@ -16,7 +16,7 @@ final class SearchViewModel: ObservableObject {
 	@Published var isLoading = false
 	@Published var isPageLoading = false
 	@Published var isError = false
-	@Published var errrorMessage: String?
+	@Published var errorMessage: String?
 	@Published var lostConnection: Bool = false
 	
 	@Published var movies: RemoteMovie.Response.List?
@@ -28,9 +28,20 @@ final class SearchViewModel: ObservableObject {
 		self.repository = repository
 		
 		$query
-			.debounce(for: .milliseconds(360), scheduler: DispatchQueue.main)
+			.debounce(for: .milliseconds(720), scheduler: DispatchQueue.main)
 			.assign(to: \.search.query, on: self)
 			.store(in: &cancellables)
+	}
+	
+	func onFirstLoad(on networkMonitor: Bool) async {
+		if !networkMonitor {
+			await getLocalData()
+		}
+		
+		guard !isMoviesExisting() else {
+			return
+		}
+		await search()
 	}
 	
 	func isAddPage(on current: RemoteMovie.Response.MovieListed) -> Bool {
@@ -43,6 +54,9 @@ final class SearchViewModel: ObservableObject {
 	
 	@MainActor
 	func getLocalData() async {
+		isError = false
+		errorMessage = nil
+		
 		do {
 			let movies = try await repository.getRecentsSearchMovie()
 			
@@ -51,10 +65,9 @@ final class SearchViewModel: ObservableObject {
 			}).filter({ movie in
 				movie.title?.lowercased().contains(search.query.lowercased()) ?? false
 			})
-			
-			print(movieItems)
 		} catch {
-			print("Error: \(error)")
+			isError = true
+			errorMessage = error.localizedDescription
 		}
 	}
 	
@@ -73,7 +86,7 @@ final class SearchViewModel: ObservableObject {
 		}
 		
 		self.isError = false
-		self.errrorMessage = nil
+		self.errorMessage = nil
 		
 		guard KeychainManager.shared.save(token: "[TMDB_ACCESS_TOKEN_AUTH]") else { return }
 		
@@ -105,7 +118,7 @@ final class SearchViewModel: ObservableObject {
 			}
 			
 			self.isError = true
-			self.errrorMessage = error.messsage
+			self.errorMessage = error.messsage
 		} catch {
 			if !isPaging {
 				self.isLoading = false
@@ -114,7 +127,7 @@ final class SearchViewModel: ObservableObject {
 			}
 			
 			self.isError = true
-			self.errrorMessage = error.localizedDescription
+			self.errorMessage = error.localizedDescription
 		}
 	}
 }
