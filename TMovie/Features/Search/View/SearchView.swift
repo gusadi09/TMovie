@@ -77,14 +77,7 @@ struct SearchView: View {
 			}
 			.navigationTitle(Text("Search Movie"))
 			.task {
-				if !networkMonitor.isConnected {
-					await viewModel.getLocalData()
-				}
-				
-				guard !viewModel.isMoviesExisting() else {
-					return
-				}
-				await viewModel.search()
+				await viewModel.onFirstLoad(on: networkMonitor.isConnected)
 			}
 			.onChange(of: networkMonitor.isConnected, { _, newConnection in
 				viewModel.lostConnection = !newConnection

@@ -26,12 +26,21 @@ final class FavoriteViewModel: ObservableObject {
 		errorMessage = nil
 		
 		do {
-			let movies = try await repository.getRecentsSearchMovie()
+			let movies = try await repository.getFavoriteMovie()
 			
 			isLoading = false
 			
 			self.movieItems = movies.compactMap({ movie in
-				RemoteMovie.Response.MovieListed(movie)
+				RemoteMovie.Response.MovieListed(
+					adult: nil,
+					posterPath: movie.posterPath,
+					id: movie.movieId,
+					originalTitle: movie.originalTitle,
+					releaseDate: movie.releaseDate,
+					title: movie.title,
+					voteAverage: nil,
+					voteCount: nil
+				)
 			})
 		} catch {
 			isLoading = false

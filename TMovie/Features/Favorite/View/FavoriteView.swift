@@ -13,41 +13,43 @@ struct FavoriteView: View {
 	@Namespace var transition
 	
     var body: some View {
-		GeometryReader { proxy in
-			List {
-				if viewModel.movieItems.isEmpty {
-					emptyMovieView(proxy: proxy)
-						.listRowSeparator(.hidden)
-						.listRowInsets(.init(top: proxy.size.height/3, leading: 16, bottom: 16, trailing: 16))
-				} else {
-					ForEach(viewModel.movieItems) { movie in
-						NavigationLink {
-							DetailMovieView(with: movie.id.orZero())
-								.navigationTransition(.zoom(sourceID: movie, in: transition))
-						} label: {
-							movieCard(with: movie, proxy: proxy)
-								.matchedTransitionSource(id: movie, in: transition)
+		NavigationStack {
+			GeometryReader { proxy in
+				List {
+					if viewModel.movieItems.isEmpty {
+						emptyMovieView(proxy: proxy)
+							.listRowSeparator(.hidden)
+							.listRowInsets(.init(top: proxy.size.height/3, leading: 16, bottom: 16, trailing: 16))
+					} else {
+						ForEach(viewModel.movieItems) { movie in
+							NavigationLink {
+								DetailMovieView(with: movie.id.orZero())
+									.navigationTransition(.zoom(sourceID: movie, in: transition))
+							} label: {
+								movieCard(with: movie, proxy: proxy)
+									.matchedTransitionSource(id: movie, in: transition)
+							}
+							.listRowSeparator(.hidden)
 						}
-						.listRowSeparator(.hidden)
 					}
 				}
+				.listStyle(.plain)
+				.refreshable {
+					await viewModel.getLocalData()
+				}
 			}
-			.listStyle(.plain)
-			.refreshable {
+			.navigationTitle(Text("Favorite Movie"))
+			.task {
 				await viewModel.getLocalData()
 			}
-		}
-		.navigationTitle(Text("Favorite Movie"))
-		.task {
-			await viewModel.getLocalData()
-		}
-		.alert("Oops Something went wrong!", isPresented: $viewModel.isError) {
-			VStack {
-				Button("OK", role: .cancel, action: {})
-			}
-		} message: {
-			VStack {
-				Text(viewModel.errorMessage.orEmpty())
+			.alert("Oops Something went wrong!", isPresented: $viewModel.isError) {
+				VStack {
+					Button("OK", role: .cancel, action: {})
+				}
+			} message: {
+				VStack {
+					Text(viewModel.errorMessage.orEmpty())
+				}
 			}
 		}
     }

@@ -33,6 +33,17 @@ final class SearchViewModel: ObservableObject {
 			.store(in: &cancellables)
 	}
 	
+	func onFirstLoad(on networkMonitor: Bool) async {
+		if !networkMonitor {
+			await getLocalData()
+		}
+		
+		guard !isMoviesExisting() else {
+			return
+		}
+		await search()
+	}
+	
 	func isAddPage(on current: RemoteMovie.Response.MovieListed) -> Bool {
 		current.id == movies?.results.last?.id && search.page < (movies?.totalPages).orZero()
 	}
