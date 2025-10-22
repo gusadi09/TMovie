@@ -26,10 +26,16 @@ struct TMovieExtensionTests {
 		#expect(!(optionalBool.orFalse()))
 	}
 	
-	@Test func optionalUInt_onEmpty() async throws {
+	@Test func optionalUInt_onZero() async throws {
 		let optionalUInt: UInt? = nil
 		
 		#expect(optionalUInt.orZero() == 0)
+	}
+	
+	@Test func optionalFloat_onZero() async throws {
+		let optionalFloat: Float? = nil
+		
+		#expect(optionalFloat.orZero() == 0.0)
 	}
 	
 	@Test func encodeModelToData() async throws {
@@ -64,5 +70,11 @@ struct TMovieExtensionTests {
 		let date = Date()
 		
 		#expect(date.toString(with: .ddMMyyyy) == Date().toString(with: .ddMMyyyy))
+	}
+	
+	@Test func uIntToCurrencyWithoutSymbol() async throws {
+		let value: UInt = 1072
+		
+		#expect(value.toCurrenyWithoutSymbol() == "1.072")
 	}
 }

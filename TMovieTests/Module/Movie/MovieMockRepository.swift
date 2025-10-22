@@ -34,4 +34,20 @@ final class MovieMockRepository: MovieRepository {
 	func saveRecentsSearchMovie(_ movie: RemoteMovie.Response.MovieListed) async throws {
 		try await self.local.saveRecentsSearchMovie(movie)
 	}
+	
+	func movieDetail(from id: UInt) async throws -> RemoteMovie.Response.Detail {
+		try await self.remote.movieDetail(from: id)
+	}
+	
+	func getMovieDetails() async throws -> [MovieDetail] {
+		try await self.local.getMovieDetails()
+	}
+	
+	func saveMovieDetail(_ movie: RemoteMovie.Response.Detail) async throws {
+		try await self.local.saveMovieDetail(movie)
+	}
+	
+	func removeMovieDetail(id: UInt) async throws {
+		try await self.local.removeMovieDetail(id: id)
+	}
 }

@@ -71,7 +71,7 @@ extension RemoteMovie.Response {
 		init(_ movie: Movie) {
 			self.adult = movie.adult
 			self.posterPath = movie.posterPath
-			self.id = movie.id
+			self.id = movie.movieId
 			self.originalTitle = movie.originalTitle
 			self.releaseDate = movie.releaseDate
 			self.title = movie.title
